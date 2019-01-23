@@ -1,56 +1,52 @@
-﻿Shader "Unlit/BallShader"
+﻿Shader "Demo/BaseVert"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_mainTex("RGB", 2D) = "white"{}
+		_speed("speed", float) = 0.5
 	}
+
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
-		LOD 100
-
+		Tags{"RenderType" = "Transparent"}
 		Pass
 		{
 			CGPROGRAM
+			#include "UnityCG.cginc"
 			#pragma vertex vert
 			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
-			
-			#include "UnityCG.cginc"
 
-			struct appdata
+			sampler2D _mainTex;
+			float _speed;
+			struct a2v
 			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
+				float4 vertex:POSITION;
+				half2 texcoord:TEXCOORD0;
 			};
 
 			struct v2f
 			{
-				float2 uv : TEXCOORD0;
-				UNITY_FOG_COORDS(1)
-				float4 vertex : SV_POSITION;
+				float4 pos:SV_POSITION;
+				half2 uv:TEXCOORD0;
 			};
 
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			
-			v2f vert (appdata v)
+			v2f vert(a2v v)
 			{
 				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				UNITY_TRANSFER_FOG(o,o.vertex);
+				// transform in model space
+				//v.vertex.x += v.vertex.x*sin(_Time.y*_speed);
+				o.pos = UnityObjectToClipPos(v.vertex);
+				// transform in clip space
+				// o.pos.x += o.pos.x*sin(_Time.y*_speed);
+				o.uv = v.texcoord;
 				return o;
 			}
-			
-			fixed4 frag (v2f i) : SV_Target
+
+			fixed4 frag(v2f i):SV_Target
 			{
-				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv);
-				// apply fog
-				UNITY_APPLY_FOG(i.fogCoord, col);
-				return col;
+				float4 c;
+				c = tex2D(_mainTex, i.uv);
+				return c;
 			}
 			ENDCG
 		}
