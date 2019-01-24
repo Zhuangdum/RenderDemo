@@ -8,8 +8,8 @@
 		Tags { "RenderType"="Opaque" }
 		LOD 100
 		// if less than depth buffer, draw this pixel
-		// ZWRITE ON
-		// ZTEST ALWAYS
+		ZWRITE ON
+		ZTEST ON
 		Pass
 		{
 			Color(1, 0, 0, 1)

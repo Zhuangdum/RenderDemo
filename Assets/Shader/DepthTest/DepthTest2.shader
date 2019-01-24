@@ -7,7 +7,8 @@
 		// if less than depth buffer, draw this pixel
 		ZWRITE ON
 		// 始终将颜色值写入到深度buffer里面
-		ZTEST ALWAYS
+		ZTEST OFF // ZTEST ALWAYS
+		// ZTEST GREATER
 		Pass
 		{
 			Color(1, 1, 0, 1)
