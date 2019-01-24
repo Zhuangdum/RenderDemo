@@ -32,7 +32,8 @@
 			struct v2f
 			{
 				float4 pos:SV_POSITION;
-				fixed3 color:COLOR;
+				fixed3 worldNormal:TEXCOORD0;
+				fixed3 viewDir:TEXCOORD1;
 			};
 
 			v2f vert (a2v i)
@@ -40,25 +41,24 @@
 				v2f o;
 				o.pos = UnityObjectToClipPos(i.vertex);
 				// get ambient
-				fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
-				fixed3 worldnormal = normalize(UnityObjectToWorldNormal(i.normal));
-				fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
-				// diffuse color
-				fixed3 diffuse = _LightColor0.rgb*_Diffuse*max(0, dot(worldnormal, worldLight));
-				// get reflect // attention: worldLight is point to light, not vertex
-				fixed3 reflectDir = normalize(reflect(-worldLight, worldnormal));
+				o.worldNormal = normalize(UnityObjectToWorldNormal(i.normal));
 				// get view dir
-				fixed3 viewDir = normalize(WorldSpaceViewDir(i.vertex));
-				// calc specular
-				fixed3 specular = _LightColor0.rgb*_Specular.rgb*pow(saturate(dot(reflectDir, viewDir)), _Gloss);
-				// return color
-				o.color = ambient+diffuse+specular;
+				o.viewDir = normalize(WorldSpaceViewDir(i.vertex));
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return fixed4(i.color, 1.0);
+				fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+				fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
+				// diffuse color
+				fixed3 diffuse = _LightColor0.rgb*_Diffuse*max(0, dot(i.worldNormal, worldLight));
+				// get reflect // attention: worldLight is point to light, not vertex
+				fixed3 reflectDir = normalize(reflect(-worldLight, i.worldNormal));
+				// calc specular
+				fixed3 specular = _LightColor0.rgb*_Specular.rgb*pow(saturate(dot(reflectDir, i.viewDir)), _Gloss);
+				
+				return fixed4(ambient+diffuse+specular, 1.0);
 			}
 			ENDCG
 		}
