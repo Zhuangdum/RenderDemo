@@ -1,4 +1,7 @@
-﻿Shader "Custom/SpecularVert"
+﻿//1.Phong模型
+// specular = K*lightColor*pow(dot(viewDir, reflect), _Gloss)
+
+Shader "Custom/SpecularVert"
 {
 	Properties
 	{
