@@ -8,8 +8,7 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
-		LOD 100
+		Tags { "LightMode"="ForwardBase"}
 
 		Pass
 		{
@@ -22,7 +21,7 @@
 
 			float4 _Diffuse;
 			float4 _Specular;
-			float4 _Gloss;
+			float _Gloss;
 
 			struct a2v
 			{
